@@ -1,4 +1,6 @@
-from django.contrib.auth.management.commands import createsuperuser as django_createsuperuser
+from django.contrib.auth.management.commands import (
+    createsuperuser as django_createsuperuser,
+)
 from django.core.management import CommandError
 
 
@@ -12,29 +14,29 @@ class Command(django_createsuperuser.Command):
         super().add_arguments(parser)
         # Убираем аргумент username из парсера
         for action in parser._actions[:]:
-            if action.dest == 'username':
+            if action.dest == "username":
                 parser._actions.remove(action)
                 break
 
     def handle(self, *args, **options):
         # Убираем username, если он каким-то образом остался
-        options['username'] = None
+        options["username"] = None
 
         # Email
-        email = options.get('email')
+        email = options.get("email")
         if not email:
-            email = input('Email address: ').strip()
+            email = input("Email address: ").strip()
             if not email:
-                raise CommandError('Email обязателен.')
+                raise CommandError("Email обязателен.")
 
         # Пароль
         while True:
-            password = input('Password: ')
-            password2 = input('Password (again): ')
+            password = input("Password: ")
+            password2 = input("Password (again): ")
             if password != password2:
                 self.stderr.write(self.style.ERROR("Пароли не совпадают."))
                 continue
-            if password.strip() == '':
+            if password.strip() == "":
                 self.stderr.write(self.style.ERROR("Пароль не может быть пустым."))
                 continue
             break
@@ -44,6 +46,8 @@ class Command(django_createsuperuser.Command):
                 email=email,
                 password=password,
             )
-            self.stdout.write(self.style.SUCCESS(f'Суперпользователь "{email}" успешно создан.'))
+            self.stdout.write(
+                self.style.SUCCESS(f'Суперпользователь "{email}" успешно создан.')
+            )
         except Exception as e:
-            raise CommandError(f'Ошибка: {e}')
+            raise CommandError(f"Ошибка: {e}")
