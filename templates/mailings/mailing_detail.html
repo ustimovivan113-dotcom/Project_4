@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Рассылка #{{ mailing.pk }}{% endblock %}
+
+{% block content %}
+<h1>Рассылка #{{ mailing.pk }}</h1>
+
+<div class="card">
+    <p><strong>Сообщение:</strong> {{ mailing.message.subject }}</p>
+    <p><strong>Статус:</strong> {{ mailing.get_status_display_value }}</p>
+    <p><strong>Начало:</strong> {{ mailing.start_time }}</p>
+    <p><strong>Окончание:</strong> {{ mailing.end_time }}</p>
+    <p><strong>Владелец:</strong> {{ mailing.owner.email }}</p>
+    <p><strong>Получатели:</strong></p>
+    <ul>
+        {% for recipient in mailing.recipients.all %}
+        <li>{{ recipient.full_name }} ({{ recipient.email }})</li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% if user == mailing.owner or user.has_perm "mailings.view_all_mailings" %}
+<form action="{% url 'mailings:mailing_send' mailing.pk %}" method="post" style="margin: 20px 0;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">Отправить сейчас</button>
+</form>
+{% endif %}
+
+<h2>Попытки отправки</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Время</th>
+            <th>Статус</th>
+            <th>Ответ сервера</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for attempt in attempts %}
+        <tr>
+            <td>{{ attempt.pk }}</td>
+            <td>{{ attempt.attempt_time }}</td>
+            <td>{{ attempt.get_status_display }}</td>
+            <td>{{ attempt.server_response|truncatewords:5 }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">Попыток пока нет</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p><a href="{% url 'mailings:mailing_list' %}">Назад к списку</a></p>
+{% endblock %}

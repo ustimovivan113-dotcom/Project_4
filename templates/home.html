@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная - Сервис рассылок{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="mb-4">Сервис управления рассылками</h1>
+            
+            {% if user.is_authenticated %}
+                <p class="lead">Добро пожаловать, {{ user.email }}!</p>
+                
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Рассылки</h5>
+                                <p class="card-text">Управление рассылками сообщений</p>
+                                <a href="{% url 'mailings:mailing_list' %}" class="btn btn-primary">Перейти</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Получатели</h5>
+                                <p class="card-text">База клиентов для рассылок</p>
+                                <a href="{% url 'mailings:recipient_list' %}" class="btn btn-primary">Перейти</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Сообщения</h5>
+                                <p class="card-text">Шаблоны писем</p>
+                                <a href="{% url 'mailings:message_list' %}" class="btn btn-primary">Перейти</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <a href="{% url 'mailings:attempt_list' %}" class="btn btn-info">История попыток рассылок</a>
+                    <a href="{% url 'users:profile' %}" class="btn btn-secondary">Профиль</a>
+                </div>
+                
+            {% else %}
+                <p class="lead">Добро пожаловать в сервис управления рассылками!</p>
+                <p>Для работы с системой необходимо <a href="{% url 'login' %}">войти</a> или <a href="{% url 'users:register' %}">зарегистрироваться</a>.</p>
+                
+                <div class="mt-4">
+                    <h3>Статистика системы:</h3>
+                    <ul>
+                        <li>Всего рассылок: {{ total_mailings|default:"0" }}</li>
+                        <li>Активных рассылок: {{ active_mailings|default:"0" }}</li>
+                        <li>Уникальных получателей: {{ unique_recipients|default:"0" }}</li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
